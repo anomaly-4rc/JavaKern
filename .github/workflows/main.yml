@@ -1,0 +1,38 @@
+name: Build Kernel Rosemary
+on:
+  workflow_dispatch:
+
+jobs:
+  build-kernel:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Kernel
+        uses: actions/checkout@v4
+
+      - name: Setup Build Environment
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y bc build-essential flex bison lld libssl-dev libelf-dev \
+          ccache libncurses-dev git-lfs python3 python3-dev libncurses6
+
+      - name: Fix Python Symlink
+        run: |
+          sudo ln -sf /usr/bin/python3 /usr/bin/python
+
+      - name: Script Build
+        run: |
+          chmod +x build.sh
+          ./build.sh
+
+      - name: Upload Image.gz-dtb
+        uses: actions/upload-artifact@v4
+        with:
+          name: Rosemary-Kernel-Image
+          path: out/arch/arm64/boot/Image.gz-dtb
+
+      - name: Upload DTB (Optional)
+        uses: actions/upload-artifact@v4
+        with:
+          name: Rosemary-DTB
+          path: out/arch/arm64/boot/dts/mediatek/*.dtb
+          if-no-files-found: warn
