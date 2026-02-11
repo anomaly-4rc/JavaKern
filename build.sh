@@ -1,5 +1,6 @@
 #!/bin/bash
 ROOT_DIR=$(pwd)
+make clean && make mrproper
 CLANG_DIR="${ROOT_DIR}/clang"
 OUT_DIR="${ROOT_DIR}/out"
 
